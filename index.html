@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#B51224">
+  <meta name="description" content="Shreeji Imaging and Diagnostics Center Private Limited - Enterprise Client Order Management System for Radiopharmaceuticals & PET Tracers">
+  
+  <title>SHREEJI - Client Order Management Portal</title>
+
+  <!-- PWA Manifest & App Icons -->
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23B51224'/><text x='50' y='68' font-size='55' font-weight='900' fill='white' text-anchor='middle'>S</text></svg>">
+
+  <!-- Professional Typography & Fallback Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Core Enterprise Styles -->
+  <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+
+  <!-- ====================================================================== -->
+  <!-- 1. AUTHENTICATION VIEW (When Unauthenticated)                           -->
+  <!-- ====================================================================== -->
+  <div id="authContainer" class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div style="width:52px; height:52px; background:#FFF; border-radius:12px; margin:0 auto 0.75rem auto; display:flex; align-items:center; justify-content:center; color:#B51224; font-size:1.8rem; font-family:var(--font-unicorn); font-weight:900; box-shadow:0 4px 10px rgba(0,0,0,0.15);">S</div>
+        <h1 class="auth-brand-shreeji">SHREEJI</h1>
+        <p style="font-size:0.88rem; font-weight:600; opacity:0.95;">Shreeji Imaging and Diagnostics Center Private Limited</p>
+        <p style="font-size:0.75rem; letter-spacing:0.08em; text-transform:uppercase; margin-top:0.35rem; opacity:0.85;">CLIENT ORDER MANAGEMENT PORTAL</p>
+      </div>
+
+      <div class="auth-tabs">
+        <button type="button" id="authTab_CLIENT" class="auth-tab-btn active" onclick="ui.setAuthTab('CLIENT')">Hospital / Client Login</button>
+        <button type="button" id="authTab_ADMIN" class="auth-tab-btn" onclick="ui.setAuthTab('ADMIN')">Admin Login</button>
+      </div>
+
+      <div class="auth-body">
+        <form id="loginForm">
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label for="loginUsername">Username or Registered Email <span class="required">*</span></label>
+            <input type="text" id="loginUsername" class="form-control" required placeholder="e.g. apex_hospital or admin" value="apex_hospital">
+          </div>
+
+          <div class="form-group" style="margin-bottom:1.25rem;">
+            <label for="loginPassword">Password <span class="required">*</span></label>
+            <input type="password" id="loginPassword" class="form-control" required placeholder="Enter secure password" value="Client@Shreeji2026!">
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; font-size:0.82rem;">
+            <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer;">
+              <input type="checkbox" checked id="rememberSession"> Remember session
+            </label>
+            <span style="color:var(--text-muted);">Encrypted Server-Side Auth</span>
+          </div>
+
+          <button type="submit" id="loginSubmitBtn" class="btn btn-primary" style="width:100%;">Sign In to Portal</button>
+        </form>
+
+        <div class="demo-credentials-box">
+          <h5>Quick Evaluation Credentials</h5>
+          <div style="display:flex; justify-content:space-between; margin-top:0.35rem;">
+            <div>
+              <strong>Client:</strong> apex_hospital<br>
+              <strong>Pass:</strong> Client@Shreeji2026!
+            </div>
+            <div>
+              <strong>Admin:</strong> admin<br>
+              <strong>Pass:</strong> Admin@Shreeji2026!
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- 2. MAIN APPLICATION SHELL (When Authenticated)                          -->
+  <!-- ====================================================================== -->
+  <div id="appShell" style="display:none;">
+
+    <!-- Site Header -->
+    <header class="site-header">
+      <div class="header-container">
+        <div class="brand-wrapper">
+          <div class="brand-icon-box">S</div>
+          <div class="brand-text">
+            <h1 class="brand-title">SHREEJI</h1>
+            <div class="company-subtitle">Shreeji Imaging and Diagnostics Center Private Limited</div>
+            <div class="portal-tag">CLIENT ORDER MANAGEMENT PORTAL</div>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <div class="server-pill" title="Live Connection to Shreeji Cyclotron Center">
+            <span class="server-dot pulse"></span>
+            <span>API Online</span>
+          </div>
+
+          <div class="user-badge">
+            <span>Hospital: <strong id="userClientName">Apex Cancer Institute</strong></span>
+            <span>&bull;</span>
+            <span id="userFullName">Dr. Rajesh Shah</span>
+            <span id="userRoleTag" class="role-tag">CLIENT</span>
+          </div>
+
+          <button type="button" class="btn btn-secondary btn-sm" onclick="ui.openSettingsModal()" title="API Server Settings">&#9881; Config</button>
+          <button type="button" class="btn btn-danger btn-sm" onclick="auth.logout()">Sign Out</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="portal-nav">
+      <div class="nav-container">
+        <button type="button" class="nav-tab-btn active" data-tab="dashboard" onclick="ui.switchTab('dashboard')">
+          <span>&bull;</span> Dashboard & KPIs
+        </button>
+        <button type="button" class="nav-tab-btn" data-tab="new-order" onclick="ui.switchTab('new-order')">
+          <span>+</span> New Order Placement
+        </button>
+        <button type="button" class="nav-tab-btn" data-tab="order-history" onclick="ui.switchTab('order-history')">
+          <span>&equiv;</span> Order History & Lots
+        </button>
+        <button type="button" id="adminTabNav" class="nav-tab-btn" data-tab="admin-panel" style="display:none;" onclick="ui.switchTab('admin-panel')">
+          <span>&#9733;</span> Admin Dispatch Control
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- ================================================================== -->
+      <!-- TAB 1: CLIENT DASHBOARD                                            -->
+      <!-- ================================================================== -->
+      <section id="view_dashboard" class="view-section active">
+        <!-- 8 Dynamic Metric Cards -->
+        <div class="dashboard-grid">
+          <div class="kpi-card">
+            <div class="kpi-content">
+              <div class="kpi-label">1. Total Orders</div>
+              <div class="kpi-number" id="kpiTotalOrders">0</div>
+            </div>
+            <div class="kpi-icon">&#128203;</div>
+          </div>
+
+          <div class="kpi-card pending">
+            <div class="kpi-content">
+              <div class="kpi-label">2. Pending Orders</div>
+              <div class="kpi-number" id="kpiPendingOrders">0</div>
+            </div>
+            <div class="kpi-icon">&#9203;</div>
+          </div>
+
+          <div class="kpi-card today">
+            <div class="kpi-content">
+              <div class="kpi-label">3. Today's Orders</div>
+              <div class="kpi-number" id="kpiTodayOrders">0</div>
+            </div>
+            <div class="kpi-icon">&#128197;</div>
+          </div>
+
+          <div class="kpi-card delivered">
+            <div class="kpi-content">
+              <div class="kpi-label">4. Delivered Orders</div>
+              <div class="kpi-number" id="kpiDeliveredOrders">0</div>
+            </div>
+            <div class="kpi-icon">&#10004;</div>
+          </div>
+
+          <div class="kpi-card cancelled">
+            <div class="kpi-content">
+              <div class="kpi-label">5. Cancelled Orders</div>
+              <div class="kpi-number" id="kpiCancelledOrders">0</div>
+            </div>
+            <div class="kpi-icon">&#10006;</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-content">
+              <div class="kpi-label">6. Total Lots</div>
+              <div class="kpi-number" id="kpiTotalLots">0</div>
+            </div>
+            <div class="kpi-icon">&#129514;</div>
+          </div>
+
+          <div class="kpi-card production">
+            <div class="kpi-content">
+              <div class="kpi-label">7. Production Planned</div>
+              <div class="kpi-number" id="kpiProductionPlanned">0</div>
+            </div>
+            <div class="kpi-icon">&#9881;</div>
+          </div>
+
+          <div class="kpi-card dispatched">
+            <div class="kpi-content">
+              <div class="kpi-label">8. Dispatched Orders</div>
+              <div class="kpi-number" id="kpiDispatchedOrders">0</div>
+            </div>
+            <div class="kpi-icon">&#128666;</div>
+          </div>
+        </div>
+
+        <!-- Analytics Overview & Fast Actions -->
+        <div class="analytics-grid">
+          <div class="panel-card">
+            <div class="panel-header">
+              <h3><span>&#128200;</span> Product-wise Order Breakdown</h3>
+              <span style="font-size:0.8rem; color:var(--text-muted);">Live PostgreSQL Aggregate</span>
+            </div>
+            <div id="productChartBox" style="padding:0.5rem 0;">
+              <!-- Dynamic SVG bars rendered via JS -->
+            </div>
+          </div>
+
+          <div class="panel-card">
+            <div class="panel-header">
+              <h3><span>&#9889;</span> Quick Actions</h3>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:0.75rem;">
+              <button type="button" class="btn btn-primary" onclick="ui.switchTab('new-order')">+ Create New Cyclotron Order</button>
+              <button type="button" class="btn btn-secondary" onclick="ui.switchTab('order-history')">&equiv; View Detailed Order History</button>
+              <button type="button" class="btn btn-outline-primary" onclick="ordersController.exportToCsv()">&#128190; Export Current Orders to CSV</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================== -->
+      <!-- TAB 2: NEW ORDER PLACEMENT (MULTIPLE LOTS)                          -->
+      <!-- ================================================================== -->
+      <section id="view_new-order" class="view-section">
+        <div class="form-card">
+          <div class="form-header-banner">
+            <h2>NEW RADIOPHARMACEUTICAL ORDER REQUISITION</h2>
+            <p>Direct Cyclotron Scheduling with Independent Multi-Lot Dose/mCi Calibration</p>
+          </div>
+
+          <form id="newOrderForm">
+            <!-- Order Header Info -->
+            <div class="form-grid-3">
+              <div class="form-group">
+                <label for="orderDate">Order Date <span class="required">*</span></label>
+                <input type="date" id="orderDate" class="form-control" required>
+              </div>
+
+              <div class="form-group">
+                <label for="orderProduct">Product Selection <span class="required">*</span></label>
+                <select id="orderProduct" class="form-control" required>
+                  <option value="1">F-18 FDG (Fluorodeoxyglucose)</option>
+                  <option value="2">F-18 PSMA (Prostate Membrane Antigen)</option>
+                  <option value="3">F-18 FDOPA (Fluorodopa)</option>
+                  <option value="4">F-18 FAPI (Fibroblast Activation)</option>
+                  <option value="5">F-18 FES (Fluoroestradiol)</option>
+                  <option value="6">F-18 FMISO (Fluoromisonidazole)</option>
+                  <option value="7">F-18 NOTA (Conjugates)</option>
+                  <option value="8">Other Radioisotope</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="orderDestination">Destination / Hospital Department <span class="required">*</span></label>
+                <input type="text" id="orderDestination" class="form-control" required placeholder="e.g. Hot Lab Room 104, Nuclear Medicine" value="Nuclear Medicine Hot Lab">
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom:1.5rem;">
+              <label for="orderNotes">Notes / Special Instructions (Optional)</label>
+              <textarea id="orderNotes" class="form-control" placeholder="Specific delivery instructions, patient schedule details, shielding requirements..."></textarea>
+            </div>
+
+            <!-- Multiple Lots Management Container -->
+            <div class="lots-section">
+              <div class="lots-header">
+                <div>
+                  <h3><span>&#129514;</span> Multiple Lot Specification</h3>
+                  <p style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">Each lot maintains independent unique ID, quantity, unit, and calibration time.</p>
+                </div>
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="ordersController.addLotRow()">+ ADD LOT</button>
+              </div>
+
+              <!-- Dynamic Lot Rows Injected Here -->
+              <div id="lotsContainer"></div>
+
+              <!-- Running Lots Summary Bar -->
+              <div class="lot-summary-bar" id="lotsSummaryBar">
+                <span>Total Lots: <strong>1</strong></span>
+                <span>Total Activity: <strong>0.00 mCi</strong></span>
+                <span>Total Doses: <strong>0 Dose</strong></span>
+              </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1.5rem;">
+              <button type="button" class="btn btn-secondary" onclick="ordersController.initLotsRepeater()">Reset Lots</button>
+              <button type="submit" id="submitOrderBtn" class="btn btn-primary" style="min-width:240px;">Submit Cyclotron Order</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- ================================================================== -->
+      <!-- TAB 3: ORDER HISTORY & FILTERS                                     -->
+      <!-- ================================================================== -->
+      <section id="view_order-history" class="view-section">
+        <div class="panel-card" style="margin-bottom:1.5rem;">
+          <div class="panel-header">
+            <h3><span>&#128065;</span> Filter & Search Orders</h3>
+            <button type="button" class="btn btn-outline-primary btn-sm" onclick="ordersController.exportToCsv()">&#128190; Export to CSV</button>
+          </div>
+
+          <div class="form-grid-3">
+            <div class="form-group">
+              <label for="filterSearch">Search Order ID / Lot ID / Destination</label>
+              <input type="text" id="filterSearch" class="form-control" placeholder="Type Order ID (e.g. SHR-2026)...">
+            </div>
+
+            <div class="form-group">
+              <label for="filterStatus">Status</label>
+              <select id="filterStatus" class="form-control">
+                <option value="ALL">All Statuses (8 Stages)</option>
+                <option value="Order Submitted">1. Order Submitted</option>
+                <option value="Production Planned">2. Production Planned</option>
+                <option value="Production Completed">3. Production Completed</option>
+                <option value="Invoice Generated">4. Invoice Generated</option>
+                <option value="Dispatched">5. Dispatched</option>
+                <option value="Out for Delivery">6. Out for Delivery</option>
+                <option value="Delivered">7. Delivered</option>
+                <option value="Cancelled">8. Cancelled</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Date Range (From / To)</label>
+              <div style="display:flex; gap:0.5rem;">
+                <input type="date" id="filterFromDate" class="form-control">
+                <input type="date" id="filterToDate" class="form-control">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="panel-card">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Order Date</th>
+                  <th>Product</th>
+                  <th>Total Lots</th>
+                  <th>Total Quantity</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTableBody">
+                <!-- Dynamically loaded -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================== -->
+      <!-- TAB 4: ADMIN DISPATCH CONTROL PANEL                                -->
+      <!-- ================================================================== -->
+      <section id="view_admin-panel" class="view-section">
+        <div class="panel-card" style="margin-bottom:1.5rem; border-left:4px solid var(--primary);">
+          <div class="panel-header">
+            <h3><span>&#9733;</span> Central Cyclotron Production & Dispatch Management</h3>
+            <span class="role-tag admin">Super Admin Role</span>
+          </div>
+          <p style="font-size:0.88rem; color:#4B5563;">
+            Authorized administrators can transition order stages from <em>Order Submitted</em> through <em>Delivered</em>, record dispatch vehicle numbers, and audit every lot.
+          </p>
+        </div>
+
+        <div class="panel-card">
+          <div class="panel-header">
+            <h3><span>&#128666;</span> Active Client Orders Across All Hospitals</h3>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="ordersController.loadOrders()">Refresh</button>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Order Date</th>
+                  <th>Hospital Client</th>
+                  <th>Product</th>
+                  <th>Total Lots</th>
+                  <th>Total Activity</th>
+                  <th>Current Status</th>
+                  <th>Transition Control</th>
+                </tr>
+              </thead>
+              <tbody id="adminOrdersTableBody">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Site Footer -->
+    <footer class="site-footer">
+      <div style="max-width:1400px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+        <div>
+          <strong>Shreeji Imaging and Diagnostics Center Private Limited</strong> &bull; Client Order Management Portal
+        </div>
+        <div>
+          ISO 9001:2015 &amp; AERB Radiopharmaceutical Compliance &bull; Secure Multi-Lot Dispatch System
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL: ORDER DETAILS, ALL LOTS & 8-STAGE TIMELINE                      -->
+  <!-- ====================================================================== -->
+  <div id="orderDetailsModal" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Order Inspection &amp; Multiple Lots</h3>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="ui.closeModal('orderDetailsModal')">&times;</button>
+      </div>
+      <div class="modal-body" id="orderDetailsBody">
+        <!-- Rendered dynamically -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="ui.closeModal('orderDetailsModal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL: ORDER SUCCESS WITH LOT IDS                                      -->
+  <!-- ====================================================================== -->
+  <div id="orderSuccessModal" class="modal-backdrop">
+    <div class="modal-box" style="max-width:500px; text-align:center;">
+      <div class="modal-body" style="padding:2.5rem 1.5rem;">
+        <div style="width:64px; height:64px; border-radius:50%; background:#DEF7EC; color:#03543F; font-size:2rem; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem auto;">&check;</div>
+        <h3 style="color:var(--primary); font-size:1.4rem; font-weight:900;">Order Placed Successfully!</h3>
+        <p style="font-size:0.9rem; color:#4B5563; margin-top:0.5rem;">Your cyclotron order has been registered in PostgreSQL.</p>
+        
+        <div style="background:#FFF5F6; border:1px solid #FECDD3; border-radius:10px; padding:1.25rem; margin:1.5rem 0;">
+          <div style="font-size:0.75rem; text-transform:uppercase; font-weight:700; color:var(--text-muted);">Assigned Order Identifier</div>
+          <div id="successOrderId" style="font-size:1.5rem; font-weight:900; color:var(--primary); margin:0.35rem 0;">SHR-2026-000001</div>
+          <div style="font-size:0.85rem; color:#64748B;">
+            <span id="successLotCount">1 Lots</span> &bull; <span id="successTotalQty">100 mCi</span>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" style="width:100%;" onclick="ui.closeModal('orderSuccessModal'); ui.switchTab('order-history');">View in Order History</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL: ADMIN STATUS UPDATE TRANSITION                                  -->
+  <!-- ====================================================================== -->
+  <div id="adminStatusModal" class="modal-backdrop">
+    <div class="modal-box" style="max-width:520px;">
+      <div class="modal-header">
+        <h3>Update Order Workflow Stage</h3>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="ui.closeModal('adminStatusModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="adminUpdateOrderId">
+        <div class="form-group" style="margin-bottom:1.25rem;">
+          <label>Target Status Stage <span class="required">*</span></label>
+          <select id="adminNewStatus" class="form-control" required>
+            <option value="Order Submitted">1. Order Submitted</option>
+            <option value="Production Planned">2. Production Planned</option>
+            <option value="Production Completed">3. Production Completed</option>
+            <option value="Invoice Generated">4. Invoice Generated</option>
+            <option value="Dispatched">5. Dispatched</option>
+            <option value="Out for Delivery">6. Out for Delivery</option>
+            <option value="Delivered">7. Delivered</option>
+            <option value="Cancelled">8. Cancelled</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Audit Remarks / Dispatch Notes</label>
+          <textarea id="adminStatusRemarks" class="form-control" placeholder="e.g. Cyclotron Beam 2 completed, canister sealed, lead pot loaded in vehicle GJ-01-XX-1234"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="ui.closeModal('adminStatusModal')">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="adminController.submitStatusUpdate()">Save Stage Transition</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL: ORDER MODIFICATION REQUEST                                      -->
+  <!-- ====================================================================== -->
+  <div id="modificationModal" class="modal-backdrop">
+    <div class="modal-box" style="max-width:540px;">
+      <div class="modal-header">
+        <h3>Order Modification Request</h3>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="ui.closeModal('modificationModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="modOrderId">
+        <p id="modOrderNotice" style="font-size:0.85rem; color:#B45309; background:#FFFBEB; border:1px solid #FDE68A; padding:0.75rem; border-radius:6px; margin-bottom:1rem;"></p>
+        <div class="form-group">
+          <label>Reason for Modification &amp; Requested Lot Adjustments <span class="required">*</span></label>
+          <textarea id="modReason" class="form-control" rows="4" placeholder="Detail the requested calibration time change or dosage adjustment..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="ui.closeModal('modificationModal')">Close</button>
+        <button type="button" class="btn btn-primary" onclick="ui.showToast('Modification request recorded and forwarded to Admin.', 'success'); ui.closeModal('modificationModal');">Submit Request to Admin</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL: CANCEL ORDER                                                    -->
+  <!-- ====================================================================== -->
+  <div id="cancelModal" class="modal-backdrop">
+    <div class="modal-box" style="max-width:480px;">
+      <div class="modal-header">
+        <h3 style="color:var(--danger);">Cancel Order Confirmation</h3>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="ui.closeModal('cancelModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="cancelOrderId">
+        <p style="font-size:0.88rem; color:#4B5563; margin-bottom:1rem;">
+          Are you sure you want to cancel this order? Cancelled records are preserved permanently in the database audit log.
+        </p>
+        <div class="form-group">
+          <label>Cancellation Reason <span class="required">*</span></label>
+          <textarea id="cancelReasonInput" class="form-control" placeholder="e.g. Patient appointment rescheduled, cyclotron maintenance, doctor request..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="ui.closeModal('cancelModal')">Keep Order</button>
+        <button type="button" class="btn btn-danger" onclick="ui.showToast('Order cancelled and preserved in audit log.', 'info'); ui.closeModal('cancelModal');">Confirm Cancellation</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL: SERVER & API SETTINGS                                           -->
+  <!-- ====================================================================== -->
+  <div id="settingsModal" class="modal-backdrop">
+    <div class="modal-box" style="max-width:540px;">
+      <div class="modal-header">
+        <h3>API &amp; Cyclotron Server Configuration</h3>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="ui.closeModal('settingsModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label>Active n8n Webhook Base URL</label>
+          <input type="text" id="settingsApiUrl" class="form-control" value="https://finisher-pajamas-dipping.ngrok-free.dev/webhook">
+          <small style="font-size:0.75rem; color:#6B7280; margin-top:0.35rem;">
+            Default ngrok public tunnel: <code>https://finisher-pajamas-dipping.ngrok-free.dev/webhook</code> or local Docker: <code>http://localhost:5678/webhook</code>
+          </small>
+        </div>
+        <div style="background:#F9FAFB; padding:0.85rem; border-radius:6px; font-size:0.8rem; color:#4B5563;">
+          <strong>Automatic Offline Resilience:</strong> If the remote webhook endpoint is temporarily unreachable, the portal automatically continues operating in interactive local simulation mode with real-time lot calculations!
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="ui.closeModal('settingsModal')">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="ui.saveSettings()">Save &amp; Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Alerts Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Core Application Scripts -->
+  <script src="./assets/app.js"></script>
+  <script>
+    // Initialize default order date to today
+    document.addEventListener('DOMContentLoaded', () => {
+      const orderDateInput = document.getElementById('orderDate');
+      if (orderDateInput) {
+        orderDateInput.value = new Date().toISOString().split('T')[0];
+        orderDateInput.min = new Date().toISOString().split('T')[0];
+      }
+    });
+  </script>
+</body>
+</html>

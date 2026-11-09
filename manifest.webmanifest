@@ -1,0 +1,25 @@
+{
+  "name": "SHREEJI - Client Order Management Portal",
+  "short_name": "Shreeji Orders",
+  "description": "Enterprise Radiopharmaceutical & Cyclotron Multi-Lot Order Management Portal for Shreeji Imaging and Diagnostics Center Private Limited",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#FFF8F8",
+  "theme_color": "#B51224",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='36' fill='%23B51224'/><text x='96' y='132' font-size='105' font-weight='900' fill='white' text-anchor='middle'>S</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='96' fill='%23B51224'/><text x='256' y='352' font-size='280' font-weight='900' fill='white' text-anchor='middle'>S</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["medical", "business", "productivity"]
+}
